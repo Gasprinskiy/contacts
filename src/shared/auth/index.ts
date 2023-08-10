@@ -1,5 +1,5 @@
 export interface Authorization {
     SignIn(email: string, password: string) : Promise<string | null>;
-    IsSignedIn() : void;
+    CheckAuthorization() : void;
     SigOut() : Promise<void>
 }

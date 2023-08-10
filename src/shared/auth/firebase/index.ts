@@ -1,7 +1,7 @@
-import type { Authorization } from '../index';
-import { initializeApp } from 'firebase/app';
+import type { Authorization } from "../index";
+import { initializeApp } from "firebase/app";
 import { getAuth, signInWithEmailAndPassword, signOut, onAuthStateChanged } from "firebase/auth";
-import appBus from '@/shared/app_bus';
+import appBus from "@/shared/app_bus";
 
 const authApp = initializeApp({
     apiKey: "AIzaSyCz3FXHsEIcBmW4rl4nf1BNO6Z3rUm_E_c",
@@ -27,7 +27,7 @@ export class FirebaseAuthApp implements Authorization {
       }
     }
 
-    IsSignedIn(): void {
+    CheckAuthorization(): void {
         onAuthStateChanged(auth, (user) => {
             if (!user) {                
                 appBus.emit("unauthorized-request")
