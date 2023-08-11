@@ -1,25 +1,18 @@
 import Db from "../db";
-import custum_errors from "../custum_errors";
-export interface Authorization {
-    SignIn(login: string, password: string) : Promise<any>;
-    CheckAuthorization(token: string) : Promise<void>;
-    SigOut(token: string) : Promise<void>;
-}
+import customErrors from "../custum_errors/";
 
-export default class AuthRepo implements Authorization {
+export default class AuthRepo {
     constructor() {
         // default user create
         this.addDefaultUser() 
     }
 
    async SignIn(login: string, password: string): Promise<any> {
-        try {
-            console.log(login, password);
-            
+        try {            
             const result = await Db.users.get({login: login, password: password})
 
-            if (result === undefined) {
-                throw custum_errors.ErrWrongLoginOrPassword
+            if (!result) {
+                throw customErrors.ErrWrongLoginOrPassword
             }
 
             const token = this.genToken(result.id!)
@@ -28,24 +21,24 @@ export default class AuthRepo implements Authorization {
             })
             return token
         } catch(err: any) {
-            if (err === custum_errors.ErrWrongLoginOrPassword) {
+            if (err === customErrors.ErrWrongLoginOrPassword) {
                 throw err
             }
-            throw custum_errors.InternalError
+            throw customErrors.InternalError
         }
     }
 
     async CheckAuthorization(token: string): Promise<void> {
         try {
             const result = await Db.session_tokens.get({token: token})
-            if (result === undefined) {
-                throw custum_errors.ErrNotAuthorized
+            if (!result) {
+                throw customErrors.ErrNotAuthorized
             }
-        } catch(err: any) {
-            if (err === custum_errors.ErrWrongLoginOrPassword) {
+        } catch(err: any) {            
+            if (err === customErrors.ErrNotAuthorized) {
                 throw err
             }
-            throw custum_errors.InternalError
+            throw customErrors.InternalError
         }
     }
 
@@ -53,7 +46,7 @@ export default class AuthRepo implements Authorization {
         try {
             await Db.session_tokens.where({session_tokens: token}).delete()
         } catch (err: any) {
-            throw custum_errors.InternalError
+            throw customErrors.InternalError
         } 
         
     }
@@ -63,6 +56,6 @@ export default class AuthRepo implements Authorization {
     }
 
     private addDefaultUser() : void {
-        Db.users.put({login: "admin", password: "admin"})
+        Db.users.put({login: "admin", password: "admin", id: 1})
     }
 }

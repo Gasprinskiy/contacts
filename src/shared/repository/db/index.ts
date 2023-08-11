@@ -12,7 +12,8 @@ export interface Contact {
   full_name: string;
   phone_number: string;
   email: string;
-  tags: number[];
+  tags: string[]
+  tagIdList: number[];
 }
 
 export interface ContactTags {
@@ -34,10 +35,10 @@ class Db extends Dexie {
     constructor() {
       super('myDatabase');
       this.version(1).stores({
-          users: '++id, login, password',
-          contacts: '++id, full_name, phone_number, email, *tags',
-          contact_tags: '++id, value',
-          session_tokens: '++id, token'
+        users: '++id, login, password',
+        contacts: '++id, full_name, phone_number, email, *tagIdList',
+        contact_tags: '++id, value',
+        session_tokens: '++id, token'
       });
     }
 }
