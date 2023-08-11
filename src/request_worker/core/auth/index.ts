@@ -1,16 +1,15 @@
 import repository from '@/shared/repository';
 import { handleRepoRequest } from '../../handler/index';
+import type { AuthParams } from "@/request_worker/entity/auth/params";
 
 export interface Auth {
-    sigIn(params: {login: string, password: string}) : Promise<void>;
+    sigIn(params: AuthParams) : Promise<void>;
     checkAuth() : Promise<void>;
     signOut(token: string) : Promise<void>;
 }
 
 export class AuthImpl implements Auth {
-    async sigIn(params: {login: string, password: string}): Promise<void> {
-        console.log(params, "client");
-        
+    async sigIn(params: AuthParams): Promise<void> {
         const token = await handleRepoRequest(repository.auth.SignIn.bind(repository.auth), params.login, params.password)
         document.cookie = String(token)
     }
