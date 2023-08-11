@@ -1,34 +1,86 @@
 <template>
     <div class="auth-view full-screen">
       <n-card>
-        <n-form>
+        <n-form 
+          ref="authRef"
+          @submit.prevent="auth"
+          :model="authValues"
+          :rules="validationRules"
+        >
+          <h2 class="auth-heder">Вход</h2>
           <n-form-item
-            label="Эл. почта"
+            label="Логин"
+            path="login"
           >
             <n-input
               type="text"
-              v-model:value="email"
+              v-model:value="authValues.login"
+              placeholder="логин"
             />
           </n-form-item>
           <n-form-item
-              label="Пароль"
+            label="Пароль"
+            path="password"
           >
             <n-input
               type="password"
-              v-model:value="password"
+              v-model:value="authValues.password"
+              placeholder="пароль"
             />
           </n-form-item>
+          <n-button
+            type="primary"
+            attr-type="submit"
+          >
+            Войти
+          </n-button>
         </n-form>
       </n-card>
     </div>
 </template>
   
 <script setup lang="ts">
-import { NCard, NForm, NFormItem, NInput } from "naive-ui";
-import { ref } from "vue";
+import { NCard, NForm, NFormItem, NInput, NButton, type FormRules, type FormInst } from "naive-ui";
+import { ref, inject } from "vue";
+import { useRouter } from "vue-router";
+import { AuthInjectionKey } from "@/request_worker/";
+import { useAppRequestHandler } from "@/composables/app_req_handler/";
 
-const email = ref<string|null>(null)
-const password = ref<string|null>(null)
+const router = useRouter()
+const authRequestWorker = inject(AuthInjectionKey)!
+
+const authRef = ref<FormInst | null>(null)
+const authValues = ref({
+  login: "",
+  password: ""
+})
+
+const validationRules : FormRules = {
+  login: {
+    required: true,
+    message: "введите ваш логин"
+  },
+  password: {
+    required: true,
+    message: "введите ваш пароль"
+  }
+}
+
+const handleAuthRequest = useAppRequestHandler(authRequestWorker.sigIn)
+
+const auth = async () : Promise<void> => {
+  console.log(authValues.value);
+  
+  authRef.value?.validate(async (errors) => {
+    if (errors) {  
+      return
+    }
+    const response = await handleAuthRequest(authValues.value)
+    if (response !== null) {
+      router.push("/")
+    }
+  })
+}
 
 </script>
   
@@ -39,6 +91,14 @@ const password = ref<string|null>(null)
     align-items: center;
     .n-card {
       max-width: 500px;
+    }
+    .auth-heder {
+      margin-bottom: 10px;
+    }
+
+    .n-button {
+      width: 100%;
+      margin-top: 10px;
     }
   }
 </style>
