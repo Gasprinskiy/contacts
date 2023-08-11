@@ -1,5 +1,5 @@
 import './assets/main.css'
-
+import './shim.d.ts'
 import { createApp } from 'vue'
 import App from './AppWrapper.vue'
 import router from './router'
