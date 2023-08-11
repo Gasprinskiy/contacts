@@ -3,7 +3,8 @@ export interface Contact {
     full_name: string;
     phone_number: string;
     email: string;
-    groups: number[];
+    tags: string[];
+    tagIdList: number[];
 }
 
 export interface ContactTags {
