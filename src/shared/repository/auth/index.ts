@@ -8,6 +8,7 @@ export interface Authorization {
 
 export default class AuthRepo implements Authorization {
     constructor() {
+        // default user create
         this.addDefaultUser() 
     }
 

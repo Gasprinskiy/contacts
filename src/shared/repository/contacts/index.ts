@@ -15,6 +15,7 @@ export default class ContactsRepoImp implements ContactsRepo {
     authRepo: Authorization;
     constructor(auth: Authorization) {
         this.authRepo = auth;
+        // default tags create
         this.createDefaultTags()
     }
 
