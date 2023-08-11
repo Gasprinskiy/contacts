@@ -1,13 +1,14 @@
 import type { Contact, ContactTags } from "@/request_worker/entity/contact/entity"
 import repository from "@/shared/repository";
 import { handleRepoRequest } from "../../handler";
+import type { ContactSearchParam } from "@/request_worker/entity/contact/params";
 
 export interface Contacts {
     loadContactsList() : Promise<Contact[]>;
     createContact(contact: Contact) : Promise<void>;
     removeContact(id: number) : Promise<void>;
-    findContact(query: string, groupIDList?: number[]) : Promise<Contact[]>;
-    loadTags() : Promise<ContactTags> 
+    findContact(params: ContactSearchParam) : Promise<Contact[]>;
+    loadTags() : Promise<ContactTags[]> 
 }
 
 export class ContactsImpl implements Contacts {
@@ -23,11 +24,16 @@ export class ContactsImpl implements Contacts {
         return handleRepoRequest(repository.contacts.RemoveContact.bind(repository.contacts), document.cookie, id)
     }
 
-    findContact(query: string, groupIDList?: number[]): Promise<Contact[]> {
-        return handleRepoRequest(repository.contacts.FindContact.bind(repository.contacts), document.cookie, query, groupIDList)
+    findContact(params: ContactSearchParam): Promise<Contact[]> {
+        return handleRepoRequest(
+            repository.contacts.FindContact.bind(repository.contacts),
+            document.cookie,
+            params.query,
+            params.tagIdList
+        )
     }
 
-    loadTags(): Promise<ContactTags> {
+    loadTags(): Promise<ContactTags[]> {
         return handleRepoRequest(repository.contacts.LoadTags.bind(repository.contacts), document.cookie)
     }
 }
