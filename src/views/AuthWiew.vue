@@ -41,16 +41,17 @@
   
 <script setup lang="ts">
 import { NCard, NForm, NFormItem, NInput, NButton, type FormRules, type FormInst } from "naive-ui";
-import { ref, inject } from "vue";
+import { inject, ref } from "vue";
 import { useRouter } from "vue-router";
 import { AuthInjectionKey } from "@/request_worker/";
 import { useAppRequestHandler } from "@/composables/app_req_handler/";
+import type { AuthParams } from "@/request_worker/entity/auth/params";
 
 const router = useRouter()
 const authRequestWorker = inject(AuthInjectionKey)!
 
 const authRef = ref<FormInst | null>(null)
-const authValues = ref({
+const authValues = ref<AuthParams>({
   login: "",
   password: ""
 })
@@ -68,16 +69,14 @@ const validationRules : FormRules = {
 
 const handleAuthRequest = useAppRequestHandler(authRequestWorker.sigIn)
 
-const auth = async () : Promise<void> => {
-  console.log(authValues.value);
-  
-  authRef.value?.validate(async (errors) => {
-    if (errors) {  
+const auth = async () : Promise<void> => {  
+  authRef.value?.validate(async (err) => {
+    if (err) {
       return
     }
     const response = await handleAuthRequest(authValues.value)
     if (response !== null) {
-      router.push("/")
+      await router.push("/")
     }
   })
 }
