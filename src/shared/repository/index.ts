@@ -1,5 +1,11 @@
-export interface Authorization {
-    SignIn(email: string, password: string) : Promise<boolean>;
-    CheckAuthorization() : void;
-    SigOut() : Promise<void>
+import Db from "./db";
+import AuthRepo from "./auth";
+import ContactsRepo from "./contacts";
+
+const auth = new AuthRepo()
+const contacts = new ContactsRepo(auth)
+
+export default {
+    auth,
+    contacts
 }
