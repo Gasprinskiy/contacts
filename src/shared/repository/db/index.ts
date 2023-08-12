@@ -27,13 +27,13 @@ export interface SessionToken {
 }
 
 class Db extends Dexie {
-    users: Table<User>
-    contacts: Table<Contact>
-    contact_tags: Table<ContactTags>
-    session_tokens: Table<SessionToken>
+    users!: Table<User> 
+    contacts!: Table<Contact> 
+    contact_tags!: Table<ContactTags> 
+    session_tokens!: Table<SessionToken>
     
     constructor() {
-      super('myDatabase');
+      super('myDatabase')
       this.version(1).stores({
         users: '++id, [login+password]',
         contacts: '++id, full_name, phone_number, email, *tagIdList',
