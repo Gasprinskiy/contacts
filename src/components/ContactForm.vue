@@ -16,6 +16,7 @@
           type="text"
           v-model:value="contactValues.full_name"
           placeholder="ФИО"
+          :allow-input="trimValue"
         />
       </n-form-item>
       <n-form-item
@@ -26,6 +27,7 @@
           type="text"
           v-model:value="contactValues.phone_number"
           placeholder="номер телефона"
+          :allow-input="onlyNumber"
         />
       </n-form-item>
       <n-form-item
@@ -36,6 +38,7 @@
           type="text"
           v-model:value="contactValues.email"
           placeholder="Эл. адрес"
+          :allow-input="trimValue"
         />
       </n-form-item>
       <n-form-item
@@ -113,6 +116,8 @@ const isCreationMode = computed(() : boolean => props.contactId === undefined)
 
 const handleLoadTags = useAppRequestHandler(contactRequestWorker.loadTags)
 const handleGetContact = useAppRequestHandler(contactRequestWorker.getContact)
+const trimValue = (value: string) => !/ /g.test(value)
+const onlyNumber = (value: string) => !value || /^\d+$/.test(value)
 
 const loadTags = async () : Promise<void> => {
   tagsList.value = await handleLoadTags()

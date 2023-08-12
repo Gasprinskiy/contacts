@@ -14,7 +14,8 @@
           >
             <n-input
               type="text"
-              v-model:value.trim="authValues.login"
+              v-model:value="authValues.login"
+              :allow-input="trimValue"
               placeholder="логин"
             />
           </n-form-item>
@@ -24,7 +25,8 @@
           >
             <n-input
               type="password"
-              v-model:value.trim="authValues.password"
+              :allow-input="trimValue"
+              v-model:value="authValues.password"
               placeholder="пароль"
             />
           </n-form-item>
@@ -69,11 +71,14 @@ const validationRules : FormRules = {
 
 const handleAuthRequest = useAppRequestHandler(authRequestWorker.sigIn)
 
+const trimValue = (value: string) => !/ /g.test(value)
+
 const auth = async () : Promise<void> => {  
   authRef.value?.validate(async (err) => {
     if (err) {
       return
     }
+
     const response = await handleAuthRequest(authValues.value)
     if (response !== null) {
       await router.push("/")
