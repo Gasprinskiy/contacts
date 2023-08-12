@@ -14,7 +14,7 @@
           >
             <n-input
               type="text"
-              v-model:value="authValues.login"
+              v-model:value.trim="authValues.login"
               placeholder="логин"
             />
           </n-form-item>
@@ -24,7 +24,7 @@
           >
             <n-input
               type="password"
-              v-model:value="authValues.password"
+              v-model:value.trim="authValues.password"
               placeholder="пароль"
             />
           </n-form-item>
