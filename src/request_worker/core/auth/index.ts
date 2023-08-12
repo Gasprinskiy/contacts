@@ -11,15 +11,16 @@ export interface Auth {
 export class AuthImpl implements Auth {
     async sigIn(params: AuthParams): Promise<void> {
         const token = await handleRepoRequest(repository.auth.SignIn.bind(repository.auth), params.login, params.password)
-        document.cookie = String(token)
+        localStorage.setItem("token", String(token))
     }
 
     checkAuth(): Promise<void> {
-        return handleRepoRequest(repository.auth.CheckAuthorization.bind(repository.auth), document.cookie)
+        return handleRepoRequest(repository.auth.CheckAuthorization.bind(repository.auth), localStorage.getItem("token"))
     }
 
-    signOut(): Promise<void> {
-        document.cookie = ""
-        return repository.auth.SigOut.bind(repository.auth)(document.cookie)
+    async signOut(): Promise<void> {
+        await repository.auth.SigOut.bind(repository.auth)(localStorage.getItem("token")!)
+        localStorage.clear()
+        return
     }
 }

@@ -4,36 +4,56 @@ import { handleRepoRequest } from "../../handler";
 import type { ContactSearchParam } from "@/request_worker/entity/contact/params";
 
 export interface Contacts {
+    getContact(id: number) : Promise<Contact>;
     loadContactsList() : Promise<Contact[]>;
-    createContact(contact: Contact) : Promise<void>;
+    createRedactContact(contact: Contact) : Promise<number>;
     removeContact(id: number) : Promise<void>;
     findContact(params: ContactSearchParam) : Promise<Contact[]>;
     loadTags() : Promise<ContactTags[]> 
 }
 
 export class ContactsImpl implements Contacts {
-    loadContactsList(): Promise<Contact[]> {
-        return handleRepoRequest(repository.contacts.LoadContactsList.bind(repository.contacts), document.cookie)
+    getContact(id: number): Promise<Contact> {
+        return handleRepoRequest(
+            repository.contacts.GetContact.bind(repository.contacts), 
+            localStorage.getItem("token"), 
+            id
+        )
     }
 
-    createContact(contact: Contact): Promise<void> {
-        return handleRepoRequest(repository.contacts.CreateContact.bind(repository.contacts), document.cookie, contact)
+    loadContactsList(): Promise<Contact[]> {
+        return handleRepoRequest(
+            repository.contacts.LoadContactsList.bind(repository.contacts), 
+            localStorage.getItem("token")
+        )
+    }
+
+    createRedactContact(contact: Contact): Promise<number> {
+        return handleRepoRequest(
+            repository.contacts.CreateRedactContact.bind(repository.contacts), 
+            localStorage.getItem("token"), 
+            contact
+        )
     }
 
     removeContact(id: number): Promise<void> {
-        return handleRepoRequest(repository.contacts.RemoveContact.bind(repository.contacts), document.cookie, id)
+        return handleRepoRequest(
+            repository.contacts.RemoveContact.bind(repository.contacts), 
+            localStorage.getItem("token"), 
+            id
+        )
     }
 
     findContact(params: ContactSearchParam): Promise<Contact[]> {
         return handleRepoRequest(
             repository.contacts.FindContact.bind(repository.contacts),
-            document.cookie,
+            localStorage.getItem("token"),
             params.query,
             params.tagIdList
         )
     }
 
     loadTags(): Promise<ContactTags[]> {
-        return handleRepoRequest(repository.contacts.LoadTags.bind(repository.contacts), document.cookie)
+        return handleRepoRequest(repository.contacts.LoadTags.bind(repository.contacts), localStorage.getItem("token"))
     }
 }
