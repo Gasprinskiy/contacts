@@ -1,9 +1,9 @@
 export interface Contact {
-    id: number;
+    id?: number;
     full_name: string;
     phone_number: string;
     email: string;
-    tags: string[];
+    tags?: ContactTags[];
     tagIdList: number[];
 }
 
