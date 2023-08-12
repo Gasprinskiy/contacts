@@ -9,9 +9,8 @@ export default class AuthRepo {
 
    async SignIn(login: string, password: string): Promise<any> {
         try {            
-            const result = await Db.users.get({login: login, password: password})
-
-            if (!result) {
+            const result = await Db.users.where('[login+password]').equals([login, password]).first()
+            if (result === undefined) {
                 throw customErrors.ErrWrongLoginOrPassword
             }
 
@@ -30,11 +29,12 @@ export default class AuthRepo {
 
     async CheckAuthorization(token: string): Promise<void> {
         try {
-            const result = await Db.session_tokens.get({token: token})
-            if (!result) {
+            const result = await Db.session_tokens.get({token: String(token)})
+            if (result === undefined) {
                 throw customErrors.ErrNotAuthorized
             }
-        } catch(err: any) {            
+            return
+        } catch(err: any) {          
             if (err === customErrors.ErrNotAuthorized) {
                 throw err
             }
@@ -44,8 +44,9 @@ export default class AuthRepo {
 
     async SigOut(token: string): Promise<void> {
         try {
-            await Db.session_tokens.where({session_tokens: token}).delete()
-        } catch (err: any) {
+            const sessToken = await Db.session_tokens.get({token: String(token)})
+            await Db.session_tokens.delete(sessToken?.id!)
+        } catch (err: any) {            
             throw customErrors.InternalError
         } 
         
@@ -55,7 +56,10 @@ export default class AuthRepo {
         return Math.random().toString(36).slice(-8) + `#|||#${id}`;
     }
 
-    private addDefaultUser() : void {
-        Db.users.put({login: "admin", password: "admin", id: 1})
+    private async addDefaultUser() : Promise<void> {
+        const count = await Db.users.count()
+        if (count === 0) {
+            Db.users.put({login: "admin", password: "admin", id: 1})
+        }
     }
 }

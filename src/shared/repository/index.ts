@@ -1,4 +1,3 @@
-import Db from "./db";
 import AuthRepo from "./auth";
 import ContactsRepo from "./contacts";
 
